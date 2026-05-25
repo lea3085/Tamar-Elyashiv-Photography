@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Image from 'next/image';
 import { Camera, Heart, Sparkles, Users, Baby, Scissors, Star } from 'lucide-react';
 import { PUBLIC_BUCKET, getSupabasePublic } from '@/lib/supabase';
