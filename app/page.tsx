@@ -1,4 +1,6 @@
-import { PUBLIC_BUCKET, supabase } from '@/lib/supabase';
+export const dynamic = 'force-dynamic';
+
+import { getSupabasePublic, PUBLIC_BUCKET } from '@/lib/supabase';
 import HomeClient from '@/app/components/home-client';
 
 type SiteSettings = {
@@ -21,11 +23,13 @@ const defaultSettings: SiteSettings = {
 };
 
 function getPublicImageUrl(path: string): string {
+  const supabase = getSupabasePublic();
   const { data } = supabase.storage.from(PUBLIC_BUCKET).getPublicUrl(path);
   return data.publicUrl;
 }
 
 async function getSettings(): Promise<SiteSettings> {
+  const supabase = getSupabasePublic();
   const { data } = await supabase
     .from('settings')
     .select('primary_color, font_family, text_align')
@@ -40,6 +44,7 @@ async function getSettings(): Promise<SiteSettings> {
 }
 
 async function getPhotos(): Promise<Photo[]> {
+  const supabase = getSupabasePublic();
   const { data } = await supabase
     .from('photos')
     .select('id, title, alt_text, image_path')
