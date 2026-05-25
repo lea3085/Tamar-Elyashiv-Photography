@@ -3,13 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --theme-primary: #9a8a78;
+  --theme-primary: #8c6a54;
   --theme-font: "Heebo", "Assistant", "Rubik", sans-serif;
   --theme-text-align: right;
 }
 
 body {
   font-family: var(--theme-font);
+  background: #f8f5f1;
 }
 
 .soft-reveal {
@@ -19,7 +20,7 @@ body {
 @keyframes softReveal {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type ElementItem = {
   id: string;
@@ -23,7 +23,14 @@ export default function AdminPage() {
   const [auth, setAuth] = useState(false);
   const [items, setItems] = useState<ElementItem[]>([]);
   const [selectedId, setSelectedId] = useState<string>('');
+  const [draftContent, setDraftContent] = useState('');
+  const [draftIcon, setDraftIcon] = useState('');
   const selected = useMemo(() => items.find((i) => i.id === selectedId), [items, selectedId]);
+
+  useEffect(() => {
+    setDraftContent(selected?.content ?? '');
+    setDraftIcon(selected?.icon_name ?? '');
+  }, [selectedId, selected?.content, selected?.icon_name]);
 
   async function loadItems() {
     const res = await fetch('/api/admin/elements', { headers: { 'x-admin-password': password } });
@@ -86,25 +93,22 @@ export default function AdminPage() {
           <div className="space-y-4">
             <h2 className="text-xl">עריכת: {selected.key}</h2>
             {selected.type === 'text' && (
-              <textarea
-                className="min-h-40 w-full rounded border p-3"
-                defaultValue={selected.content ?? ''}
-                onBlur={(e) => savePatch({ content: e.target.value })}
-              />
+              <>
+                <textarea className="min-h-40 w-full rounded border p-3" value={draftContent} onChange={(e) => setDraftContent(e.target.value)} />
+                <button className="rounded bg-stone-900 px-4 py-2 text-white" onClick={() => savePatch({ content: draftContent })}>שמירת טקסט</button>
+              </>
             )}
             {selected.type === 'icon' && (
-              <input
-                className="w-full rounded border p-3"
-                defaultValue={selected.icon_name ?? ''}
-                onBlur={(e) => savePatch({ icon_name: e.target.value })}
-                placeholder="שם אייקון (lucide)"
-              />
+              <>
+                <input className="w-full rounded border p-3" value={draftIcon} onChange={(e) => setDraftIcon(e.target.value)} placeholder="שם אייקון (lucide)" />
+                <button className="rounded bg-stone-900 px-4 py-2 text-white" onClick={() => savePatch({ icon_name: draftIcon })}>שמירת אייקון</button>
+              </>
             )}
             {selected.type === 'image' && (
               <input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0])} />
             )}
             <div className="grid gap-3 md:grid-cols-2">
-              <input className="rounded border p-2" type="color" onChange={(e) => savePatch({ style: { ...(selected.style ?? {}), color: e.target.value } })} />
+              <input className="rounded border p-2" type="color" defaultValue={selected.style?.color ?? '#8c6a54'} onChange={(e) => savePatch({ style: { ...(selected.style ?? {}), color: e.target.value } })} />
               <input className="rounded border p-2" placeholder="גופן" defaultValue={selected.style?.fontFamily ?? ''} onBlur={(e) => savePatch({ style: { ...(selected.style ?? {}), fontFamily: e.target.value } })} />
               <select className="rounded border p-2" defaultValue={selected.style?.textAlign ?? 'right'} onChange={(e) => savePatch({ style: { ...(selected.style ?? {}), textAlign: e.target.value } })}>
                 <option value="right">ימין</option><option value="center">מרכז</option><option value="left">שמאל</option>
